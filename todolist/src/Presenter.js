@@ -1,44 +1,44 @@
-function addItem(id, text) {
-    require("./Model").addItem(id, text);
-}
+let presenter = {
 
-function doneItem(id) {
-    require("./Model").doneItem(id);
-}
-
-function removeItem(id) {
-    require("./Model").removeItem(id);
-}
-
-function* getAllItems() {
-    for (let item of require("./Model").getAllItems()) {
-        let key = item[0];
-        let [text, type] = item[1].split(",");
-
-        if (type == require("./Model").TODO) {
-           type = "todo";
+    addItem: function (id, text) {
+        model.addItem(id, text);
+    },
+    
+    doneItem: function (id) {
+        model.doneItem(id);
+    },
+    
+    removeItem: function (id) {
+        model.removeItem(id);
+    },
+    
+    getAllItems: function* () {
+        for (let item of model.getAllItems()) {
+            let key = item[0];
+            let [text, type] = item[1].split(",");
+    
+            if (type == model.TODO) {
+            type = "todo";
+            }
+            else {
+                type = "done";
+            }
+    
+            yield [key, text, type];
         }
-        else {
-            type = "done";
-        }
-
-        yield [key, text, type];
+    },
+    
+    clearAll: function () {
+        model.clearAll();
+    },
+    
+    getNewId: function () {
+        return model.getNewIndex();
     }
 }
 
-function clearAll() {
-    require("./Model").clearAll();
-}
-
-function getNewId() {
-    return require("./Model").getNewIndex();
-}
+let model = require("./Model").model;
 
 module.exports = {
-    addItem: addItem,
-    doneItem: doneItem,
-    removeItem: removeItem,
-    getAllItems: getAllItems,
-    clearAll: clearAll,
-    getNewId: getNewId
+    presenter
 }

@@ -1,49 +1,45 @@
-function initModel() {
-    if (localStorage.lastTodoItemIndex === undefined) {
-        localStorage.lastTodoItemIndex = 0;
-    }
-}
+let model = {
 
-function* getAllItems() {
-    for (key in localStorage) {
-        if (("0" <= key[0]) && (key[0] <= "9"))
-            yield [key, localStorage[key]];
-    }
-}
+    init: function () {
+        if (!("lastTodoItemIndex" in localStorage))
+            localStorage.setItem("lastTodoItemIndex", "0");
+    },
 
-function clearAll() {
-    localStorage.clear();
-    localStorage.lastTodoItemIndex = 0;
-}
+    getAllItems: function* () {
+        for (key in localStorage) {
+            if (("0" <= key[0]) && (key[0] <= "9"))
+                yield [key, localStorage.getItem(key)];
+        }
+    },
 
-function addItem(id, text) {
-    localStorage[id] = text + "," + TODO;
-}
+    clearAll: function () {
+        localStorage.clear();
+        localStorage.setItem("lastTodoItemIndex", "0");
+    },
 
-function doneItem(id) {
-    let item = localStorage[id].slice(0, -1) + DONE;
-    localStorage[id] = item;
-}
+    addItem: function (id, text) {
+        localStorage.setItem(id, text + "," + TODO);
+    },
 
-function removeItem(id) {
-    delete localStorage[id];
-}
+    doneItem: function (id) {
+        let item = localStorage.getItem(id).slice(0, -1) + DONE;
+        localStorage.setItem(id, item);
+    },
 
-function getNewIndex() {
-    return localStorage.lastTodoItemIndex++;
-}
+    removeItem: function (id) {
+        localStorage.removeItem(id);
+    },
 
-const TODO = 0;
-const DONE = 1;
+    getNewIndex: function () {
+        let index = localStorage.getItem("lastTodoItemIndex");
+        localStorage.setItem("lastTodoItemIndex", ++index);
+        return index;
+    },
+
+    TODO: 0,
+    DONE: 1
+};
 
 module.exports = {
-    initModel: initModel,
-    getAllItems: getAllItems,
-    clearAll: clearAll,
-    addItem: addItem,
-    doneItem: doneItem,
-    removeItem: removeItem,
-    getNewIndex: getNewIndex,
-    TODO: TODO,
-    DONE: DONE
+    model
 }
