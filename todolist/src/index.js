@@ -1,2 +1,2 @@
-require("./Model").model.init();
-require("./View").view.init();
+require("./Model").init();
+require("./View").init();

@@ -1,44 +1,51 @@
-let model = {
-    init: function () {
-        if (!("lastTodoItemIndex" in localStorage))
-            localStorage.setItem("lastTodoItemIndex", "0");
-    },
+function init () {
+    if (!("lastTodoItemIndex" in window.localStorage))
+        window.localStorage.setItem("lastTodoItemIndex", "0");
+}
 
-    getAllItems: function* () {
-        for (key in localStorage) {
-            if (("0" <= key[0]) && (key[0] <= "9"))
-                yield [key, localStorage.getItem(key)];
-        }
-    },
+function* getAllItems() {
+    for (key in window.localStorage) {
+        if (("0" <= key[0]) && (key[0] <= "9"))
+            yield [key, window.localStorage.getItem(key)];
+    }
+}
 
-    clearAll: function () {
-        localStorage.clear();
-        localStorage.setItem("lastTodoItemIndex", "0");
-    },
+function clearAll() {
+    window.localStorage.clear();
+    window.localStorage.setItem("lastTodoItemIndex", "0");
+}
 
-    addItem: function (id, text) {
-        localStorage.setItem(id, text + "," + TODO);
-    },
+function addItem(id, text) {
+    window.localStorage.setItem(id, text + "," + TODO);
+}
 
-    doneItem: function (id) {
-        let item = localStorage.getItem(id).slice(0, -1) + DONE;
-        localStorage.setItem(id, item);
-    },
+function doneItem(id) {
+    let item = window.localStorage.getItem(id).slice(0, -1) + DONE;
+    window.localStorage.setItem(id, item);
+}
 
-    removeItem: function (id) {
-        localStorage.removeItem(id);
-    },
+function removeItem(id) {
+    window.localStorage.removeItem(id);
+}
 
-    getNewIndex: function () {
-        let index = localStorage.getItem("lastTodoItemIndex");
-        localStorage.setItem("lastTodoItemIndex", ++index);
-        return index;
-    },
+function getNewIndex() {
+    let index = window.localStorage.getItem("lastTodoItemIndex");
+    window.localStorage.setItem("lastTodoItemIndex", ++index);
+    return index;
+}
 
-    TODO: 0,
-    DONE: 1
-};
+const TODO = 0;
+const DONE = 1;
+
 
 module.exports = {
-    model
+    init,
+    getAllItems,
+    clearAll,
+    addItem,
+    doneItem,
+    removeItem,
+    getNewIndex,
+    TODO,
+    DONE
 }
