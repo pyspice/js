@@ -1,5 +1,4 @@
 let model = {
-
     init: function () {
         if (!("lastTodoItemIndex" in localStorage))
             localStorage.setItem("lastTodoItemIndex", "0");

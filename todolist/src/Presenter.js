@@ -1,5 +1,4 @@
 let presenter = {
-
     addItem: function (id, text) {
         model.addItem(id, text);
     },

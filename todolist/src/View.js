@@ -1,7 +1,5 @@
 let view = {
-    
     init: function () {
-
         btnSubmit = document.getElementById("todosubmit-id");
         btnClear = document.getElementById("todoclear-id");
         textfield = document.getElementById("todoinput-id");
@@ -17,7 +15,6 @@ let view = {
     },
 
     onSubmit: function () {
-
         let todo = textfield.value;
         if (!todo)
             return;
@@ -37,7 +34,6 @@ let view = {
     },
 
     onDone: function (item) {
-
         item.className = "doneitem";
         presenter.doneItem(this.toInt(item.id));
     },
@@ -48,7 +44,6 @@ let view = {
     },
 
     createButton: function (id, text) {
-
         let btn = document.createElement("button");
         btn.id = "todo" + text + id + "-id";
         btn.className = "todobtn";
@@ -58,7 +53,6 @@ let view = {
     },
 
     createItem: function (id, text, type) {
-
         let item = document.createElement("li");
         if (type == "todo") {
             item.className = "todoitem";
