@@ -16,6 +16,12 @@ function getList(listId) {
     }
 }
 
+function removeList(listId) {
+    let lists = JSON.parse(window.localStorage.getItem("todoLists"));
+    delete lists[listId];
+    window.localStorage.setItem("todoLists", JSON.stringify(lists));
+}
+
 function clearAllItems(listId) {
     let lists = JSON.parse(window.localStorage.getItem("todoLists"));
     lists[listId] = [];
@@ -43,6 +49,7 @@ function removeItem(listId, itemIndex) {
 module.exports = {
     init,
     getList,
+    removeList,
     clearAllItems,
     addItem,
     doneItem,

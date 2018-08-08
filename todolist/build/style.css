@@ -3,6 +3,11 @@
     width: 100%;
 }
 
+.cross {
+    float: right;
+    color: darkslategray;
+}
+
 .todohead {
     padding: 20px;
     background-color: rgb(204, 255, 204);
@@ -31,4 +36,10 @@
 
 .todobtn {
     margin-left: 10px;
+}
+
+.container {
+    float: left;
+    margin: 10px;
+    width: 300px;
 }

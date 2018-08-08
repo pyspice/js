@@ -11,8 +11,12 @@ function init() {
 
 function addList(node, listId) {
     let list = model.getList(listId);
-
+    
     view.addList(node, listId, list);
+}
+
+function removeList(listId) {
+    model.removeList(listId);
 }
 
 function addItem(listId, text) {
@@ -34,6 +38,7 @@ function clearAllItems(listId) {
 module.exports = {
     init,
     addList,
+    removeList,
     addItem,
     doneItem,
     removeItem,

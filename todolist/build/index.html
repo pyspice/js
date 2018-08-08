@@ -9,6 +9,7 @@
         <template id="todolist-tmpl">
             <div class="todo">
                 <div class="todohead">
+                    <div class="cross">&#10006;</div>
                     <div class="todotitle" name="todo-title">What to do, what to do...</div><br>
                     <input type="text" class="todoitem" name="todo-text"><br>
                     <button class="todoitem" name="submit-button">Add to-do</button>
@@ -22,14 +23,13 @@
         
         <template id="todoitem-tmpl">
             <li class="todoitem">
-                <p style="margin: 0"></p>
                 <button class="todobtn">done</button>
                 <button class="todobtn">remove</button>
             </li>
         </template>
 
-        <div id="list-node1"></div><br>
-        <div id="list-node2"></div>
+        <div class="container" id="list-node1"></div>
+        <div class="container" id="list-node2"></div>
 
         <script src="./build.js"></script>
     </body>

@@ -1,4 +1,3 @@
-let btnSubmit, btnClear, textfield, todolist; 
 let presenter;
 
 function init (listId) {
@@ -15,6 +14,7 @@ function addList(node, listId, list) {
 
     let textfield = head.querySelector("input");
     let [btnSubmit, btnClear] = head.querySelectorAll("button");
+    let cross = head.querySelector("div");
     
     for (let i = 0; i < list.length; ++i) {
         let text = list[i].text;
@@ -27,7 +27,8 @@ function addList(node, listId, list) {
     node.appendChild(root);    
 
     btnSubmit.addEventListener("click", function() { onSubmit(root); });
-    btnClear.addEventListener("click", function() { onClear(root); });
+    btnClear.addEventListener("click", function() { onClearList(root); });
+    cross.addEventListener("click", function() { onRemoveList(root); });
 }
 
 function createItem(itemIndex, text, type) {
@@ -47,8 +48,8 @@ function createItem(itemIndex, text, type) {
 
     item.insertBefore(textNode, btnDone);
 
-    btnDone.addEventListener("click", function() { onDone(item); });
-    btnRemove.addEventListener("click", function() { onRemove(item); });
+    btnDone.addEventListener("click", function() { onDoneItem(item); });
+    btnRemove.addEventListener("click", function() { onRemoveItem(item); });
 
     return item;
 }
@@ -70,20 +71,26 @@ function onSubmit(root) {
     presenter.addItem(listId, text);
 }
 
-function onClear(root) {
+function onClearList(root) {
     let todolist = root.querySelector("ol");
     todolist.innerHTML = "";
     presenter.clearAllItems(root.id);
 }
 
-function onDone(item) {
+function onRemoveList(root) {
+    let parent = root.parentNode;
+    parent.removeChild(root);
+    presenter.removeList(root.id);
+}
+
+function onDoneItem(item) {
     item.className = "doneitem";
 
     let root = item.parentNode.parentNode;
     presenter.doneItem(root.id, item.getAttribute("itemIndex"));
 }
 
-function onRemove(item) {
+function onRemoveItem(item) {
     let todolist = item.parentNode;
     let itemIndex = +item.getAttribute("itemIndex");
     let listItems = todolist.querySelectorAll("li");
