@@ -1,6 +1,22 @@
+.todo {
+    margin: 10px;
+    width: 100%;
+}
+
 .todohead {
     padding: 20px;
-    background-color: rgb(240, 240, 240);
+    background-color: rgb(204, 255, 204);
+    text-align: center;
+}
+
+.todolist {
+    margin-top: 0;
+    padding: 20px;
+    background-color: rgb(244, 244, 244);
+}
+
+.todotitle {
+    font-weight: bold;
 }
 
 .todoitem {

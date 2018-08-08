@@ -6,17 +6,31 @@
     </head>
 
     <body>
-        <div class="todohead">
-            <div class="todoitem">What to do, what to do...<br>
-            <input class="todoitem" type="text" id="todoinput-id"><br>
-            <button class="todoitem" id="todosubmit-id">Add to-do</button>
-            <button class="todoitem" id="todoclear-id">Clear all</button>
-        </div>
+        <template id="todolist-tmpl">
+            <div class="todo">
+                <div class="todohead">
+                    <div class="todotitle" name="todo-title">What to do, what to do...</div><br>
+                    <input type="text" class="todoitem" name="todo-text"><br>
+                    <button class="todoitem" name="submit-button">Add to-do</button>
+                    <button class="todoitem" name="clear-button">Clear all</button>
+                </div>
+            
+                <ol class="todolist" name="todo-body">
+                </ol>
+            </div>
+        </template>
+        
+        <template id="todoitem-tmpl">
+            <li class="todoitem">
+                <p style="margin: 0"></p>
+                <button class="todobtn">done</button>
+                <button class="todobtn">remove</button>
+            </li>
+        </template>
 
-        <ol id="todolist-id">
-        </ol>
+        <div id="list-node1"></div><br>
+        <div id="list-node2"></div>
 
         <script src="./build.js"></script>
-
     </body>
 </html>

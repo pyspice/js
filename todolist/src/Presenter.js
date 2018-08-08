@@ -1,46 +1,41 @@
-function addItem(id, text) {
-    model.addItem(id, text);
+let model;
+let view;
+
+function init() {
+    model = require("./Model");
+    model.init();
+
+    view = require("./View");
+    view.init();
 }
 
-function doneItem(id) {
-    model.doneItem(id);
+function addList(node, listId) {
+    let list = model.getList(listId);
+
+    view.addList(node, listId, list);
 }
 
-function removeItem(id) {
-    model.removeItem(id);
+function addItem(listId, text) {
+    model.addItem(listId, text);
 }
 
-function* getAllItems() {
-    for (let item of model.getAllItems()) {
-        let key = item[0];
-        let [text, type] = item[1].split(",");
-
-        if (type == model.TODO) {
-            type = "todo";
-        }
-        else {
-            type = "done";
-        }
-
-        yield [key, text, type];
-    }
+function doneItem(listId, itemIndex) {
+    model.doneItem(listId, itemIndex);
 }
 
-function clearAll() {
-    model.clearAll();
+function removeItem(listId, itemIndex) {
+    model.removeItem(listId, itemIndex);
 }
 
-function getNewId() {
-    return model.getNewIndex();
+function clearAllItems(listId) {
+    model.clearAllItems(listId);
 }
-
-let model = require("./Model");
 
 module.exports = {
+    init,
+    addList,
     addItem,
     doneItem,
     removeItem,
-    getAllItems,
-    clearAll,
-    getNewId
+    clearAllItems
 }
