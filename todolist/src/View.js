@@ -9,6 +9,7 @@ let onRemoveItemCallback = ()=>undefined;
 
 const Delegate = require("dom-delegate").Delegate;
 const PubSub = require("pubsub-js");
+const TempleUtils = require("temple-wat");
 
 function init (callbacks) {
     onClearListCallback = callbacks.onClearListCallback;
@@ -63,6 +64,9 @@ function init (callbacks) {
             onRemoveItem(target.parentNode);
         }
     );
+
+    let listTemplate = TempleUtils.pool(require("./list.temple")).get("list");
+    let itemTemplate = TempleUtils.pool(require("./item.temple")).get("item");
 }
 
 function addList(node, listId, list) {

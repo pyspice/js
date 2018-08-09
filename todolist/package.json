@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "dom-delegate": "^2.0.3",
-    "pubsub-js": "^1.6.0"
+    "pubsub-js": "^1.6.0",
+    "temple-wat": "^0.2.5",
+    "temple-webpack-loader": "^1.0.4"
   }
 }

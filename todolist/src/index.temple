@@ -1,0 +1,14 @@
+<div>
+    {{ name }}
+
+    <ul>
+        <forall key="names">
+            <li> {{ data }} </li>
+        </forall>
+    </ul>
+
+    <if key="hi">
+        {{ data }}
+    </if>
+
+</div>

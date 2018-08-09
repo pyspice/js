@@ -1,0 +1,5 @@
+<li class="todoitem" data-item-index="{{index}}">
+    <span>{{text}}</span>
+    <button class="todobtn done-item-button">done</button>
+    <button class="todobtn remove-item-button">remove</button>
+</li>
