@@ -1,7 +1,47 @@
-let presenter;
+const TODO = "todo";
+const DONE = "done";
 
-function init (listId) {
-    presenter = require("./Presenter");
+let onSubmitCallback = ()=>undefined;
+let onClearListCallback = ()=>undefined;
+let onRemoveListCallback = ()=>undefined;
+let onDoneItemCallback = ()=>undefined;
+let onRemoveItemCallback = ()=>undefined;
+
+const Delegate = require("dom-delegate").Delegate;
+
+function init (callbacks) {
+    onClearListCallback = callbacks.onClearListCallback;
+    onRemoveListCallback = callbacks.onRemoveListCallback;
+    onSubmitCallback = callbacks.onSubmitCallback;
+    onDoneItemCallback = callbacks.onDoneItemCallback;
+    onRemoveItemCallback = callbacks.onRemoveItemCallback;
+    
+    let btnRemoveListDelegate = new Delegate(window.document.body);
+    btnRemoveListDelegate.on("click", 'div[data-input-name="remove-list-button"]', onRemoveList);
+    
+    let btnClearListDelegate = new Delegate(window.document.body);
+    btnClearListDelegate.on("click", 'button[data-input-name="clear-list-button"]', onClearList);
+    
+    let btnSubmitDelegate = new Delegate(window.document.body);
+    btnSubmitDelegate.on("click", 'button[data-input-name="submit-button"]', onSubmit);
+    
+    let keyEnterSubmitDelegate = new Delegate(window.document.body);
+    keyEnterSubmitDelegate.on(
+        "keypress", 
+        'input[data-input-name="submit-field"]',
+        function (event, target) {
+            var key = event.which || event.keyCode;
+            if (key === 13) { 
+                onSubmit(event, target); 
+            }
+        }
+    );
+    
+    let btnDoneItemDelegate = new Delegate(window.document.body);
+    btnDoneItemDelegate.on("click", 'button[data-input-name="done-item-button"]', onDoneItem);
+    
+    let btnRemoveItemDelegate = new Delegate(window.document.body);
+    btnRemoveItemDelegate.on("click", 'button[data-input-name="remove-item-button"]', onRemoveItem);
 }
 
 function addList(node, listId, list) {
@@ -13,8 +53,6 @@ function addList(node, listId, list) {
     let todolist = root.querySelector("ol");
 
     let textfield = head.querySelector("input");
-    let [btnSubmit, btnClear] = head.querySelectorAll("button");
-    let cross = head.querySelector("div");
     
     for (let i = 0; i < list.length; ++i) {
         let text = list[i].text;
@@ -24,11 +62,7 @@ function addList(node, listId, list) {
         todolist.appendChild(item);
     }
 
-    node.appendChild(root);    
-
-    btnSubmit.addEventListener("click", function() { onSubmit(root); });
-    btnClear.addEventListener("click", function() { onClearList(root); });
-    cross.addEventListener("click", function() { onRemoveList(root); });
+    node.appendChild(root);
 }
 
 function createItem(itemIndex, text, type) {
@@ -36,25 +70,19 @@ function createItem(itemIndex, text, type) {
     let item = window.document.importNode(tmpl.content, true).querySelector("li");
     
     item.setAttribute("itemIndex", itemIndex);
-    if (type == "todo") {
-        item.className = "todoitem";
+    item.className = "todoitem";
+
+    let p = item.querySelector("span");
+    p.innerHTML = text;
+    if (type == DONE) {
+        p.className = "donefont";
     }
-    else {
-        item.className = "doneitem";
-    }
-
-    let [btnDone, btnRemove] = item.querySelectorAll("button");
-    let textNode = window.document.createTextNode(text);
-
-    item.insertBefore(textNode, btnDone);
-
-    btnDone.addEventListener("click", function() { onDoneItem(item); });
-    btnRemove.addEventListener("click", function() { onRemoveItem(item); });
 
     return item;
 }
 
-function onSubmit(root) {
+function onSubmit(event, target) {
+    let root = target.parentNode.parentNode;
     let textfield = root.querySelector("div").querySelector("input");
     let text = textfield.value;
     if (!text)
@@ -62,50 +90,58 @@ function onSubmit(root) {
 
     let todolist = root.querySelector("ol");
     let itemIndex = todolist.querySelectorAll("li").length;
-    let item = createItem(itemIndex, text, "todo");
+    let item = createItem(itemIndex, text, TODO);
     todolist.appendChild(item);
 
     textfield.value = "";
 
     let listId = root.id;
-    presenter.addItem(listId, text);
+    onSubmitCallback(listId, text);
 }
 
-function onClearList(root) {
+function onClearList(event, target) {
+    let root = target.parentNode.parentNode;
     let todolist = root.querySelector("ol");
     todolist.innerHTML = "";
-    presenter.clearAllItems(root.id);
+    onClearListCallback(root.id);
 }
 
-function onRemoveList(root) {
+function onRemoveList(event, target) {
+    let root = target.parentNode.parentNode;
     let parent = root.parentNode;
     parent.removeChild(root);
-    presenter.removeList(root.id);
+    onRemoveListCallback(root.id);
 }
 
-function onDoneItem(item) {
-    item.className = "doneitem";
+function onDoneItem(event, target) {
+    let item = target.parentNode;
+    let p = item.querySelector("span");
+    p.className = "donefont";
 
     let root = item.parentNode.parentNode;
-    presenter.doneItem(root.id, item.getAttribute("itemIndex"));
+    onDoneItemCallback(root.id, item.getAttribute("itemIndex"));
 }
 
-function onRemoveItem(item) {
+function onRemoveItem(event, target) {
+    let item = target.parentNode;
     let todolist = item.parentNode;
     let itemIndex = +item.getAttribute("itemIndex");
-    let listItems = todolist.querySelectorAll("li");
+    let next = item.nextSibling;
 
-    for (let i = itemIndex + 1; i < listItems.length; ++i) {
-        listItems[i].setAttribute("itemIndex", i - 1); 
+    while (next !== null) {
+        next.setAttribute("itemIndex", itemIndex++);
+        next = next.nextSibling;
     }
 
     todolist.removeChild(item);
 
     let root = todolist.parentNode;
-    presenter.removeItem(root.id, itemIndex);
+    onRemoveItemCallback(root.id, itemIndex);
 }
 
 module.exports = {
     init,
-    addList
+    addList,
+    TODO,
+    DONE
 }

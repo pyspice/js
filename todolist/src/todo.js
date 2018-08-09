@@ -1,7 +1,6 @@
-let presenter;
+let presenter = require("./Presenter");
 
 function init() {
-    presenter = require("./Presenter");
     presenter.init();
 }
 

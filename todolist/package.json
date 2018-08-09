@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node ../testServer/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +13,8 @@
     "copy-webpack-plugin": "^4.5.2",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "dom-delegate": "^2.0.3"
   }
 }

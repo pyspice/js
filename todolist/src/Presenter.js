@@ -1,16 +1,29 @@
-let model;
-let view;
+const model = require("./Model");
+const view = require("./View");
 
 function init() {
-    model = require("./Model");
     model.init();
-
-    view = require("./View");
-    view.init();
+    view.init( 
+        {
+            onClearListCallback: clearList,
+            onRemoveListCallback: removeList,
+            onSubmitCallback: addItem,
+            onDoneItemCallback: doneItem,
+            onRemoveItemCallback: removeItem
+        } 
+    );
 }
 
 function addList(node, listId) {
     let list = model.getList(listId);
+    for (let i = 0; i < list.length; ++i) {
+        if (list[i].type == model.TODO) {
+            list[i].type = view.TODO;
+        }
+        else {
+            list[i].type = view.DONE;
+        }
+    }
     
     view.addList(node, listId, list);
 }
@@ -31,16 +44,11 @@ function removeItem(listId, itemIndex) {
     model.removeItem(listId, itemIndex);
 }
 
-function clearAllItems(listId) {
-    model.clearAllItems(listId);
+function clearList(listId) {
+    model.clearList(listId);
 }
 
 module.exports = {
     init,
-    addList,
-    removeList,
-    addItem,
-    doneItem,
-    removeItem,
-    clearAllItems
+    addList
 }

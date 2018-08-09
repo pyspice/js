@@ -1,3 +1,6 @@
+const TODO = "0";
+const DONE = "1";
+
 function init () {
     if (!("todoLists" in window.localStorage)) {
         window.localStorage.setItem("todoLists", "{}");
@@ -22,7 +25,7 @@ function removeList(listId) {
     window.localStorage.setItem("todoLists", JSON.stringify(lists));
 }
 
-function clearAllItems(listId) {
+function clearList(listId) {
     let lists = JSON.parse(window.localStorage.getItem("todoLists"));
     lists[listId] = [];
     window.localStorage.setItem("todoLists", JSON.stringify(lists));
@@ -30,13 +33,13 @@ function clearAllItems(listId) {
 
 function addItem(listId, text) {
     let lists = JSON.parse(window.localStorage.getItem("todoLists"));
-    lists[listId].push({"text": text, "type": "todo"});
+    lists[listId].push({text, type: TODO});
     window.localStorage.setItem("todoLists", JSON.stringify(lists));
 }
 
 function doneItem(listId, itemIndex) {
     let lists = JSON.parse(window.localStorage.getItem("todoLists"));
-    lists[listId][itemIndex].type = "done";    
+    lists[listId][itemIndex].type = DONE;    
     window.localStorage.setItem("todoLists", JSON.stringify(lists));
 }
 
@@ -50,8 +53,10 @@ module.exports = {
     init,
     getList,
     removeList,
-    clearAllItems,
+    clearList,
     addItem,
     doneItem,
-    removeItem
+    removeItem,
+    TODO,
+    DONE
 }

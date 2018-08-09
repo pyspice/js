@@ -28,8 +28,7 @@
     margin: 5px;
 }
 
-.doneitem {
-    margin: 5px;
+.donefont {
     color: gray;
     text-decoration: line-through; 
 }
