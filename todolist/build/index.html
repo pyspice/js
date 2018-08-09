@@ -9,11 +9,11 @@
         <template id="todolist-tmpl">
             <div class="todo">
                 <div class="todohead">
-                    <div class="cross" data-input-name="remove-list-button">[&#10006;]</div>
+                    <div class="remove-list-button">[&#10006;]</div>
                     <div class="todotitle" name="todo-title">What to do, what to do...</div><br>
-                    <input type="text" class="todoitem" data-input-name="submit-field"><br>
-                    <button class="todoitem" data-input-name="submit-button">Add to-do</button>
-                    <button class="todoitem" data-input-name="clear-list-button">Clear all</button>
+                    <input type="text" class="todoitem submit-field"><br>
+                    <button class="todoitem submit-button">Add to-do</button>
+                    <button class="todoitem clear-list-button">Clear all</button>
                 </div>
             
                 <ol class="todolist" name="todo-body">
@@ -24,8 +24,8 @@
         <template id="todoitem-tmpl">
             <li class="todoitem">
                 <span></span>
-                <button class="todobtn" data-input-name="done-item-button">done</button>
-                <button class="todobtn" data-input-name="remove-item-button">remove</button>
+                <button class="todobtn done-item-button">done</button>
+                <button class="todobtn remove-item-button">remove</button>
             </li>
         </template>
 
