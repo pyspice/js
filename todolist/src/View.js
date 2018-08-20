@@ -1,5 +1,5 @@
-const TODO = "todo";
-const DONE = "done";
+const TODO = "todofont";
+const DONE = "donefont";
 
 let onSubmitCallback = ()=>undefined;
 let onClearListCallback = ()=>undefined;
@@ -11,10 +11,10 @@ const Delegate = require("dom-delegate").Delegate;
 const PubSub = require("pubsub-js");
 const TempleUtils = require("temple-wat");
 
-const listPool = TempleUtils.pool(require("./list.temple"));
-const itemPool = TempleUtils.pool(require("./item.temple"));
+const listPool = TempleUtils.pool(require("./listTemplate.temple"));
+const itemPool = TempleUtils.pool(require("./itemTemplate.temple"));
 let listTemplates = new Object(null);
-let itemTemplate;
+let itemTemplates = new Object(null);
 
 function init (callbacks) {
     onClearListCallback = callbacks.onClearListCallback;
@@ -35,7 +35,7 @@ function init (callbacks) {
         "click", 
         '.clear-list-button', 
         function(event, target) {
-            onClearList(target.parentNode.parentNode);
+            onClearList(target.parentNode.parentNode.id);
         }
     );
     delegate.on(
@@ -69,30 +69,42 @@ function init (callbacks) {
             onRemoveItem(target.parentNode);
         }
     );
+
+    window.listTemplates = listTemplates;
+    window.itemTemplates = itemTemplates;
 }
 
 function addList(node, listId, list) {
-    let listTemplate = listPool.get("list");
+    let listTemplate = listPool.get("listTemplate");
 
-    let items = [];
+    itemTemplates[listId] = [];
     for (let i = 0; i < list.length; ++i) {
         let text = list[i].text;
         let type = list[i].type;
 
-        let item = createItem(i, text, type);
-        items.push({data: item.root()});
+        let item = {
+            itemIndex: i, 
+            text, 
+            itemClass: type
+        };
+        itemTemplates[listId].push({data: item});
     }
     
     listTemplate[1].update({
         listId,
-        items
+        items: itemTemplates[listId]
     }); 
 
-    listTemplates[listId] = listTemplate;
+    listTemplates[listId] = listTemplate[1];
 
-    let root = listTemplate[1].root();
-    node.appendChild(root);
+    node.appendChild(listTemplate[1].root());
 
+    let token = PubSub.subscribe(
+        "ON_SUBMIT", 
+        function (msg, text) {
+            onSubmit(listId, text);
+        }
+    );
 
     // let tmpl = window.document.querySelector("#todolist-tmpl");
     // let root = window.document.importNode(tmpl.content, true).querySelector("div");
@@ -109,20 +121,13 @@ function addList(node, listId, list) {
     // }
 
     // node.appendChild(root);
-
-    let token = PubSub.subscribe(
-        "ON_SUBMIT", 
-        function (msg, text) {
-            onSubmit(root, text);
-        }
-    );
 }
 
 function createItem(itemIndex, text, type) {
-    let itemTemplate = itemPool.get("item");
+    let itemTemplate = itemPool.get("itemTemplate");
 
     let itemClass = (type == DONE ? "donefont" : "");
-    itemTemplate.update({
+    itemTemplate[1].update({
         itemIndex,
         itemClass,
         text
@@ -152,23 +157,27 @@ function submitPublisher(target) {
     textfield.value = "";
 }
 
-function onSubmit(root, text) {
+function onSubmit(listId, text) {
     if (!text)
         return;
 
-    let todolist = root.querySelector("ol");
-    let itemIndex = todolist.querySelectorAll("li").length;
-    let item = createItem(itemIndex, text, TODO);
-    todolist.appendChild(item);
+    let item = {
+        itemIndex: itemTemplates[listId].length,
+        text, 
+        itemClass: TODO
+    };
+    itemTemplates[listId].push({data: item});
+    updateList(listId);
 
-    let listId = root.id;
     onSubmitCallback(listId, text);
 }
 
-function onClearList(root) {
-    let todolist = root.querySelector("ol");
-    todolist.innerHTML = "";
-    onClearListCallback(root.id);
+function onClearList(listId) {
+    itemTemplates[listId] = [];
+    listTemplates[listId].update({
+        items: []
+    });
+    onClearListCallback(listId);
 }
 
 function onRemoveList(root) {
@@ -178,29 +187,34 @@ function onRemoveList(root) {
 }
 
 function onDoneItem(item) {
-    let span = item.querySelector("span");
-    span.className = "donefont";
+    let itemIndex = +item.dataset.itemIndex;
+    let root = item.parentNode.parentNode.parentNode;
+    let listId = root.id;
+    
+    itemTemplates[listId][itemIndex].data.itemClass = DONE;
+    updateList(listId);
 
-    let root = item.parentNode.parentNode;
-    onDoneItemCallback(root.id, item.getAttribute("itemIndex"));
+    onDoneItemCallback(listId, itemIndex);
 }
 
 function onRemoveItem(item) {
-    let todolist = item.parentNode;
-    let itemIndex = +item.getAttribute("itemIndex");
+    let itemIndex = +item.dataset.itemIndex;
+    let root = item.parentNode.parentNode.parentNode;
+    let listId = root.id;
 
-    let i = itemIndex;
-    let next = item.nextSibling;
-
-    while (next !== null) {
-        next.setAttribute("itemIndex", i++);
-        next = next.nextSibling;
+    for (let i = itemIndex + 1; i < itemTemplates[listId].length; ++i) {
+        itemTemplates[listId][i].data.itemIndex = i - 1;
     }
+    itemTemplates[listId].splice(itemIndex, 1);
+    updateList(listId);
 
-    todolist.removeChild(item);
+    onRemoveItemCallback(listId, itemIndex);
+}
 
-    let root = todolist.parentNode;
-    onRemoveItemCallback(root.id, itemIndex);
+function updateList(listId) {
+    listTemplates[listId].update({
+        items: itemTemplates[listId]
+    });
 }
 
 module.exports = {

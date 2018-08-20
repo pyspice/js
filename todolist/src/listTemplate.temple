@@ -9,7 +9,7 @@
 
     <ol class="todolist" name="todo-body">
         <forall key="items">
-            <li>{{ data }}</li>
+            <li><include name="itemTemplate" key="data"></li>
         </forall>
     </ol>
 </div>
