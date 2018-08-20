@@ -11,9 +11,10 @@ const Delegate = require("dom-delegate").Delegate;
 const PubSub = require("pubsub-js");
 const TempleUtils = require("temple-wat");
 
-const listPool = TempleUtils.pool(require("./listTemplate.temple"));
-let listTemplates = new Object(null);
-let itemTemplates = new Object(null);
+const listPool = TempleUtils.pool(require("./todolistTemplate.temple"));
+const itemPool = TempleUtils.pool(require("./itemTemplate.temple"));
+let listTemplates = {};
+let itemTemplates = {};
 
 function init (callbacks) {
     onClearListCallback = callbacks.onClearListCallback;
@@ -68,10 +69,13 @@ function init (callbacks) {
             onRemoveItem(target.parentNode);
         }
     );
+
+    window.listTemplates = listTemplates;
+    window.itemTemplates = itemTemplates;
 }
 
 function addList(node, listId, list) {
-    let listTemplate = listPool.get("listTemplate");
+    let listTemplate = listPool.get("todolistTemplate");
 
     itemTemplates[listId] = [];
     for (let i = 0; i < list.length; ++i) {
@@ -95,7 +99,7 @@ function addList(node, listId, list) {
 
     node.appendChild(listTemplate[1].root());
 
-    PubSub.subscribe(
+    let token = PubSub.subscribe(
         "ON_SUBMIT", 
         function (msg, text) {
             onSubmit(listId, text);
