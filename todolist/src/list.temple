@@ -1,6 +1,6 @@
-<div class="todo" id="{{list-id}}">
+<div class="todo" id="{{ listId }}">
     <div class="todohead">
-        <div class="remove-list-button">[&#10006;]</div>
+        <div class="remove-list-button">[x]</div>
         <div class="todotitle" name="todo-title">What to do, what to do...</div><br>
         <input type="text" class="todoitem submit-field"><br>
         <button class="todoitem submit-button">Add to-do</button>
@@ -8,5 +8,8 @@
     </div>
 
     <ol class="todolist" name="todo-body">
+        <forall key="items">
+            <li>{{ data }}</li>
+        </forall>
     </ol>
 </div>

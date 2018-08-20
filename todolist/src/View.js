@@ -11,6 +11,11 @@ const Delegate = require("dom-delegate").Delegate;
 const PubSub = require("pubsub-js");
 const TempleUtils = require("temple-wat");
 
+const listPool = TempleUtils.pool(require("./list.temple"));
+const itemPool = TempleUtils.pool(require("./item.temple"));
+let listTemplates = new Object(null);
+let itemTemplate;
+
 function init (callbacks) {
     onClearListCallback = callbacks.onClearListCallback;
     onRemoveListCallback = callbacks.onRemoveListCallback;
@@ -64,27 +69,46 @@ function init (callbacks) {
             onRemoveItem(target.parentNode);
         }
     );
-
-    let listTemplate = TempleUtils.pool(require("./list.temple")).get("list");
-    let itemTemplate = TempleUtils.pool(require("./item.temple")).get("item");
 }
 
 function addList(node, listId, list) {
-    let tmpl = window.document.querySelector("#todolist-tmpl");
-    let root = window.document.importNode(tmpl.content, true).querySelector("div");
-    root.id = listId;
+    let listTemplate = listPool.get("list");
 
-    let todolist = root.querySelector("ol");
-    
+    let items = [];
     for (let i = 0; i < list.length; ++i) {
         let text = list[i].text;
         let type = list[i].type;
 
         let item = createItem(i, text, type);
-        todolist.appendChild(item);
+        items.push({data: item.root()});
     }
+    
+    listTemplate[1].update({
+        listId,
+        items
+    }); 
 
+    listTemplates[listId] = listTemplate;
+
+    let root = listTemplate[1].root();
     node.appendChild(root);
+
+
+    // let tmpl = window.document.querySelector("#todolist-tmpl");
+    // let root = window.document.importNode(tmpl.content, true).querySelector("div");
+    // root.id = listId;
+
+    // let todolist = root.querySelector("ol");
+    
+    // for (let i = 0; i < list.length; ++i) {
+    //     let text = list[i].text;
+    //     let type = list[i].type;
+
+    //     let item = createItem(i, text, type);
+    //     todolist.appendChild(item);
+    // }
+
+    // node.appendChild(root);
 
     let token = PubSub.subscribe(
         "ON_SUBMIT", 
@@ -95,19 +119,30 @@ function addList(node, listId, list) {
 }
 
 function createItem(itemIndex, text, type) {
-    let tmpl = window.document.querySelector("#todoitem-tmpl");
-    let item = window.document.importNode(tmpl.content, true).querySelector("li");
+    let itemTemplate = itemPool.get("item");
+
+    let itemClass = (type == DONE ? "donefont" : "");
+    itemTemplate.update({
+        itemIndex,
+        itemClass,
+        text
+    });
+
+    return itemTemplate[1];
+
+    // let tmpl = window.document.querySelector("#todoitem-tmpl");
+    // let item = window.document.importNode(tmpl.content, true).querySelector("li");
     
-    item.setAttribute("itemIndex", itemIndex);
-    item.className = "todoitem";
+    // item.setAttribute("itemIndex", itemIndex);
+    // item.className = "todoitem";
 
-    let span = item.querySelector("span");
-    span.innerHTML = text;
-    if (type == DONE) {
-        span.className = "donefont";
-    }
+    // let span = item.querySelector("span");
+    // span.innerHTML = text;
+    // if (type == DONE) {
+    //     span.className = "donefont";
+    // }
 
-    return item;
+    // return item; 
 }
 
 function submitPublisher(target) {
