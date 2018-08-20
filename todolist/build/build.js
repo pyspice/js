@@ -393,7 +393,6 @@ const PubSub = __webpack_require__(8);
 const TempleUtils = __webpack_require__(0);
 
 const listPool = TempleUtils.pool(__webpack_require__(10));
-const itemPool = TempleUtils.pool(__webpack_require__(11));
 let listTemplates = new Object(null);
 let itemTemplates = new Object(null);
 
@@ -450,9 +449,6 @@ function init (callbacks) {
             onRemoveItem(target.parentNode);
         }
     );
-
-    window.listTemplates = listTemplates;
-    window.itemTemplates = itemTemplates;
 }
 
 function addList(node, listId, list) {
@@ -480,55 +476,12 @@ function addList(node, listId, list) {
 
     node.appendChild(listTemplate[1].root());
 
-    let token = PubSub.subscribe(
+    PubSub.subscribe(
         "ON_SUBMIT", 
         function (msg, text) {
             onSubmit(listId, text);
         }
     );
-
-    // let tmpl = window.document.querySelector("#todolist-tmpl");
-    // let root = window.document.importNode(tmpl.content, true).querySelector("div");
-    // root.id = listId;
-
-    // let todolist = root.querySelector("ol");
-    
-    // for (let i = 0; i < list.length; ++i) {
-    //     let text = list[i].text;
-    //     let type = list[i].type;
-
-    //     let item = createItem(i, text, type);
-    //     todolist.appendChild(item);
-    // }
-
-    // node.appendChild(root);
-}
-
-function createItem(itemIndex, text, type) {
-    let itemTemplate = itemPool.get("itemTemplate");
-
-    let itemClass = (type == DONE ? "donefont" : "");
-    itemTemplate[1].update({
-        itemIndex,
-        itemClass,
-        text
-    });
-
-    return itemTemplate[1];
-
-    // let tmpl = window.document.querySelector("#todoitem-tmpl");
-    // let item = window.document.importNode(tmpl.content, true).querySelector("li");
-    
-    // item.setAttribute("itemIndex", itemIndex);
-    // item.className = "todoitem";
-
-    // let span = item.querySelector("span");
-    // span.innerHTML = text;
-    // if (type == DONE) {
-    //     span.className = "donefont";
-    // }
-
-    // return item; 
 }
 
 function submitPublisher(target) {
@@ -583,10 +536,10 @@ function onRemoveItem(item) {
     let root = item.parentNode.parentNode.parentNode;
     let listId = root.id;
 
-    for (let i = itemIndex + 1; i < itemTemplates[listId].length; ++i) {
-        itemTemplates[listId][i].data.itemIndex = i - 1;
-    }
     itemTemplates[listId].splice(itemIndex, 1);
+    for (let i = itemIndex; i < itemTemplates[listId].length; ++i) {
+        itemTemplates[listId][i].data.itemIndex = i;
+    }
     updateList(listId);
 
     onRemoveItemCallback(listId, itemIndex);
@@ -1383,12 +1336,6 @@ module.exports = function(module) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var temple_utils = __webpack_require__(0);module.exports = { "listTemplate": function(pool){var n9 = document.createElement("ol"),n8 = document.createElement("button"),n7 = document.createElement("button"),n6 = document.createElement("br"),n5 = document.createElement("input"),n4 = document.createElement("br"),n3 = document.createElement("div"),n2 = document.createElement("div"),n1 = document.createElement("div"),n0 = document.createElement("div"),child_listTemplate_forall_100 = [],after_listTemplate_forall_100 = document.createTextNode("");n9.setAttribute("name", "todo-body");n9.className = "todolist";n8.className = "todoitem clear-list-button";n7.className = "todoitem submit-button";n5.className = "todoitem submit-field";n5.setAttribute("type", "text");n3.setAttribute("name", "todo-title");n3.className = "todotitle";n2.className = "remove-list-button";n1.className = "todohead";n0.className = "todo";n2.appendChild(document.createTextNode("[x]"));n1.appendChild(n2);n3.appendChild(document.createTextNode("What to do, what to do..."));n1.appendChild(n3);n1.appendChild(n4);n1.appendChild(n5);n1.appendChild(n6);n7.appendChild(document.createTextNode("Add to-do"));n1.appendChild(n7);n8.appendChild(document.createTextNode("Clear all"));n1.appendChild(n8);n0.appendChild(n1);n9.appendChild(after_listTemplate_forall_100);n0.appendChild(n9);return {remove:function(){n0.parentNode.removeChild(n0);},listId:function(a){n0.id = a},items:function(a){temple_utils.render_children(after_listTemplate_forall_100, "listTemplate_forall_10", a, pool, child_listTemplate_forall_100)},update:function(a){var t = a.listId;if(undefined !== t) this.listId(t);t = a.items;if(undefined !== t) this.items(t)},root: function(){return n0;}};},"listTemplate_forall_10": function(pool){var n11 = document.createElement("li"),child_itemTemplate1 = [],after_itemTemplate1 = document.createTextNode("");n11.appendChild(after_itemTemplate1);return {remove:function(){n11.parentNode.removeChild(n11);},data:function(a){temple_utils.render_child(after_itemTemplate1, "itemTemplate", a, pool, child_itemTemplate1)},update:function(a){var t = a.data;if(undefined !== t) this.data(t)},root: function(){return n11;}};}};
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var temple_utils = __webpack_require__(0);module.exports = { "itemTemplate": function(pool){var n15 = document.createElement("button"),n14 = document.createElement("button"),n13 = document.createElement("span"),n12 = document.createElement("div"),n13_text2_text = document.createTextNode("");n15.className = "todobtn remove-item-button";n14.className = "todobtn done-item-button";n12.className = "todoitem";n13.appendChild(n13_text2_text);n12.appendChild(n13);n14.appendChild(document.createTextNode("done"));n12.appendChild(n14);n15.appendChild(document.createTextNode("remove"));n12.appendChild(n15);return {remove:function(){n12.parentNode.removeChild(n12);},itemIndex:function(a){n12.setAttribute("data-item-index", a)},itemClass:function(a){n13.className = "" + a},text:function(a){n13_text2_text.nodeValue = a},update:function(a){var t = a.itemIndex;if(undefined !== t) this.itemIndex(t);t = a.itemClass;if(undefined !== t) this.itemClass(t);t = a.text;if(undefined !== t) this.text(t)},root: function(){return n12;}};}};
 
 /***/ })
 /******/ ]);
